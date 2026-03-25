@@ -16,7 +16,7 @@ from .profiles import ProfileMatcherService, load_profiles_config
 from .profiles.config import create_default_profiles_config, find_profiles_config_file
 from .state_manager import StateManager
 from .system_tray import SystemTrayIcon
-from .transcription import VoxtralTranscriber, WhisperTranscriber
+from .transcription import SpeechmaticsTranscriber, VoxtralTranscriber, WhisperTranscriber
 from .window_manager import WindowManager
 
 logger = logging.getLogger(__name__)
@@ -60,6 +60,9 @@ class VoxVibeService(QObject):
         if backend == "voxtral":
             logger.info("Creating VoxtralTranscriber")
             return VoxtralTranscriber(self.config.transcription)
+        elif backend == "speechmatics":
+            logger.info("Creating SpeechmaticsTranscriber")
+            return SpeechmaticsTranscriber(self.config.transcription)
         elif backend == "faster-whisper":
             logger.info("Creating WhisperTranscriber")
             return WhisperTranscriber(self.config.transcription)

@@ -10,7 +10,7 @@
 ## Technology Stack
 
 - **Python**: 3.11+ with PyQt6 for GUI
-- **AI/ML**: faster-whisper for speech-to-text transcription  
+- **AI/ML**: faster-whisper, Voxtral (Mistral), and Speechmatics for speech-to-text transcription  
 - **Audio**: sounddevice for audio recording
 - **Desktop Integration**: GNOME Shell extension with DBus communication
 - **Package Management**: uv (fast Python package manager)
@@ -63,12 +63,14 @@ voxvibe/
 
 **Core Modules**:
 - `audio_recorder.py`: Audio capture using sounddevice (16kHz, mono)
-- `transcriber.py`: Whisper AI transcription with faster-whisper
+- `transcription/`: Pluggable transcription backends (faster-whisper, Voxtral, Speechmatics)
 - `dbus_window_manager.py`: DBus client for GNOME extension communication
 - `window_manager.py`: Window focus and management utilities
 
 **Dependencies** (from `pyproject.toml`):
 - `faster-whisper>=1.1.1` - Efficient Whisper AI implementation
+- `mistralai>=1.0.0` - Voxtral API client
+- `speechmatics-batch>=0.4.1` - Speechmatics Batch API client
 - `numpy>=2.3.0` - Numerical operations
 - `pyqt6>=6.9.1` - GUI framework
 - `sounddevice>=0.5.2` - Audio recording

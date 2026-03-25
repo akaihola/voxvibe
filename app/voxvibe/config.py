@@ -37,6 +37,15 @@ class VoxtralConfig:
 
 
 @dataclass
+class SpeechmaticsConfig:
+    """Configuration for Speechmatics Batch API backend."""
+    api_key: str = ""
+    language: str = "en"
+    operating_point: Literal["standard", "enhanced"] = "standard"
+    api_url: str = "https://eu1.asr.api.speechmatics.com/v2"
+
+
+@dataclass
 class PostProcessingConfig:
     """Configuration for post-processing transcribed text."""
     enabled: bool = True
@@ -48,9 +57,10 @@ class PostProcessingConfig:
 @dataclass
 class TranscriptionConfig:
     """Configuration for transcription backend and models."""
-    backend: Literal["faster-whisper", "voxtral"] = "faster-whisper"
+    backend: Literal["faster-whisper", "voxtral", "speechmatics"] = "faster-whisper"
     faster_whisper: FasterWhisperConfig = field(default_factory=FasterWhisperConfig)
     voxtral: VoxtralConfig = field(default_factory=VoxtralConfig)
+    speechmatics: SpeechmaticsConfig = field(default_factory=SpeechmaticsConfig)
 
 
 @dataclass
@@ -199,9 +209,10 @@ def _parse_config(config_data: dict) -> VoxVibeConfig:
         logging_data = config_data.get('logging', {})
         post_processing_data = config_data.get('post_processing', {})
         
-        # Handle nested faster-whisper and voxtral config with backward compatibility
+        # Handle nested faster-whisper, voxtral, and speechmatics config with backward compatibility
         faster_whisper_data = transcription_data.pop('faster_whisper', {})
         voxtral_data = transcription_data.pop('voxtral', {})
+        speechmatics_data = transcription_data.pop('speechmatics', {})
         
         # Handle backward compatibility: check if post_processing is still nested under transcription
         if 'post_processing' in transcription_data:
@@ -219,6 +230,7 @@ def _parse_config(config_data: dict) -> VoxVibeConfig:
         transcription_config = TranscriptionConfig(**transcription_data)
         transcription_config.faster_whisper = FasterWhisperConfig(**faster_whisper_data)
         transcription_config.voxtral = VoxtralConfig(**voxtral_data)
+        transcription_config.speechmatics = SpeechmaticsConfig(**speechmatics_data)
         
         # Create config objects
         return VoxVibeConfig(
@@ -258,7 +270,7 @@ def create_default_config() -> Path:
     default_config = '''# VoxVibe Configuration File
 
 [transcription]
-# Options: "faster-whisper", "voxtral", default: "faster-whisper"
+# Options: "faster-whisper", "voxtral", "speechmatics", default: "faster-whisper"
 # backend = "faster-whisper"  
 
 [transcription.faster_whisper]
@@ -283,6 +295,19 @@ def create_default_config() -> Path:
 
 # Mistral API key (required for Voxtral backend)
 # api_key = "your-mistral-api-key"
+
+[transcription.speechmatics]
+# Speechmatics API key (required for Speechmatics backend)
+# api_key = "your-speechmatics-api-key"
+
+# Language code for transcription
+# language = "en"
+
+# Operating point: "standard" (fast) or "enhanced" (higher accuracy)
+# operating_point = "standard"
+
+# Batch API endpoint URL (change region as needed: eu1, us1)
+# api_url = "https://eu1.asr.api.speechmatics.com/v2"
 
 [post_processing]
 # Enable post-processing with LLM to improve transcription quality
