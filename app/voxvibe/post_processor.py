@@ -87,6 +87,9 @@ Return only the improved text, no explanations or commentary."""
             system_prompt = custom_prompt if custom_prompt else self._system_prompt
             
             # Call the LLM
+            # Use max_completion_tokens (not max_tokens) for compatibility
+            # with newer OpenAI models (e.g. gpt-5.4-nano) which reject
+            # the deprecated max_tokens parameter.
             response = litellm.completion(
                 model=self.model,
                 messages=[
@@ -94,7 +97,7 @@ Return only the improved text, no explanations or commentary."""
                     {"role": "user", "content": user_prompt}
                 ],
                 temperature=self.temperature,
-                max_tokens=1000,
+                max_completion_tokens=1000,
                 timeout=30
             )
             
