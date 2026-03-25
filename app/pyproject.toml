@@ -14,6 +14,7 @@ dependencies = [
     "qt-material>=2.17",
     "sounddevice>=0.5.2",
     "soundfile>=0.12.1",
+    "speechmatics-batch>=0.4.1",
 ]
 
 [project.scripts]

@@ -11,6 +11,7 @@ from voxvibe.config import (
     FasterWhisperConfig,
     HotkeyConfig,
     LoggingConfig,
+    SpeechmaticsConfig,
     TranscriptionConfig,
     UIConfig,
     VoxVibeConfig,
@@ -308,6 +309,38 @@ def test_load_config_no_file_found(mocker: "MockerFixture") -> None:
     
     with pytest.raises(ConfigurationError, match="No configuration file found"):
         load_config()
+
+
+def test_speechmatics_config_defaults() -> None:
+    """Test SpeechmaticsConfig default values."""
+    config = SpeechmaticsConfig()
+    assert config.api_key == ""
+    assert config.language == "en"
+    assert config.operating_point == "standard"
+    assert config.api_url == "https://eu1.asr.api.speechmatics.com/v2"
+
+
+def test_config_with_speechmatics_section(mocker: "MockerFixture") -> None:
+    """Test loading config with speechmatics backend section."""
+    config_content = b"""
+[transcription]
+backend = "speechmatics"
+
+[transcription.speechmatics]
+api_key = "sm-test-key-123"
+language = "de"
+operating_point = "enhanced"
+api_url = "https://us1.asr.api.speechmatics.com/v2"
+"""
+    mocker.patch("voxvibe.config.find_config_file", return_value=Path("/fake/path.toml"))
+    mocker.patch("builtins.open", mocker.mock_open(read_data=config_content))
+
+    config = load_config()
+    assert config.transcription.backend == "speechmatics"
+    assert config.transcription.speechmatics.api_key == "sm-test-key-123"
+    assert config.transcription.speechmatics.language == "de"
+    assert config.transcription.speechmatics.operating_point == "enhanced"
+    assert config.transcription.speechmatics.api_url == "https://us1.asr.api.speechmatics.com/v2"
 
 
 def test_load_config_file_read_error(mocker: "MockerFixture") -> None:

@@ -70,12 +70,48 @@ The configuration file uses the [TOML](https://toml.io) format and is organized 
 
 #### Transcription Settings
 
+VoxVibe supports multiple transcription backends. Set the `backend` option to choose one:
+
 ```toml
 [transcription]
+backend = "faster-whisper"  # Options: "faster-whisper", "voxtral", "speechmatics"
+```
+
+##### faster-whisper (default – local, offline)
+
+```toml
+[transcription]
+backend = "faster-whisper"
+
+[transcription.faster_whisper]
 model = "base"              # Whisper model size (see options below)
-language = "en"             # Language code or "auto" for auto-detection  
+language = "en"             # Language code or "auto" for auto-detection
 device = "auto"             # Processing device: "auto", "cpu", or "cuda"
 compute_type = "auto"       # Precision: "auto", "int8", "int16", "float16", "float32"
+```
+
+##### Voxtral (Mistral cloud API)
+
+```toml
+[transcription]
+backend = "voxtral"
+
+[transcription.voxtral]
+model = "voxtral-mini-latest"
+api_key = "your-mistral-api-key"
+```
+
+##### Speechmatics (cloud API)
+
+```toml
+[transcription]
+backend = "speechmatics"
+
+[transcription.speechmatics]
+api_key = "your-speechmatics-api-key"
+language = "en"
+operating_point = "standard"  # "standard" (fast) or "enhanced" (higher accuracy)
+# api_url = "https://eu1.asr.api.speechmatics.com/v2"  # change region: eu1, us1
 ```
 
 **Model Options** (from fastest/least accurate to slowest/most accurate):
